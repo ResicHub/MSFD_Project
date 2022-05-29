@@ -34,6 +34,7 @@ public class SettingsManager : MonoBehaviour
         {
             soundButton.ResetText(soundOn);
         }
+        Debug.Log($"{soundOn} {volume}");
     }
 
     public void SetVolume(float value)
@@ -54,10 +55,5 @@ public class SettingsManager : MonoBehaviour
             volume = volume
         };
         SaveLoadManager.Instance.SaveSettings(data);
-    }
-
-    private void OnDestroy()
-    {
-        SaveSettings();
     }
 }

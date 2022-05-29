@@ -9,15 +9,31 @@ public class TransportBeltMovung : MonoBehaviour
     [Range(0.1f, 10f)]
     private float speed;
     private Vector3 currentPosition;
-    void Start()
+    private bool isMoving;
+
+    private void Start()
     {
         myRigidbody = GetComponent<Rigidbody>();
         currentPosition = myRigidbody.position;
+        isMoving = true;
     }
 
-    void FixedUpdate()
+    private void FixedUpdate()
     {
-        myRigidbody.position += Vector3.forward * speed * Time.fixedDeltaTime;
-        myRigidbody.MovePosition(currentPosition);
+        if (isMoving)
+        {
+            myRigidbody.position += Vector3.forward * speed * Time.fixedDeltaTime;
+            myRigidbody.MovePosition(currentPosition);
+        }
+    }
+
+    public void SetSpeed(float value)
+    {
+        speed = value;
+    }
+
+    public void SetMovement(bool value)
+    {
+        isMoving = value;
     }
 }

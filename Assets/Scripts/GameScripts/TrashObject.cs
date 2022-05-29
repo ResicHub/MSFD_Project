@@ -15,6 +15,7 @@ public class TrashObject : MonoBehaviour
     private bool goToGoal = false;
 
     private Rigidbody rigidbody;
+    bool isDropped = false;
 
     private void Awake()
     {
@@ -26,6 +27,7 @@ public class TrashObject : MonoBehaviour
         rigidbody.useGravity = false;
         startPoint = Camera.main.WorldToScreenPoint(gameObject.transform.position);
         goToGoal = true;
+        isDropped = false;
     }
 
     private void OnMouseDrag()
@@ -42,6 +44,7 @@ public class TrashObject : MonoBehaviour
 
     private void OnMouseUp()
     {
+        isDropped = true;
         rigidbody.velocity = Vector3.zero;
         rigidbody.useGravity = true;
     }
@@ -62,5 +65,53 @@ public class TrashObject : MonoBehaviour
         {
             goToGoal = false;
         }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.transform.tag == "Floor")
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        if (isDropped)
+        {
+            if (other.transform.tag == "Container")
+            {
+                isDropped = false;
+                StartCoroutine(GoToContainerCoroutine(transform.position, other.transform.position));
+                StartCoroutine(SqueezeCoroutine());
+                StartCoroutine(DestroyCoroutine());
+            }
+        }
+    }
+
+    private IEnumerator GoToContainerCoroutine(Vector3 startPosition, Vector3 goal)
+    {
+        float t = 0;
+        while (t <= 1)
+        {
+            yield return transform.position = Vector3.Lerp(startPosition, goal, t);
+            t += Time.deltaTime * 2;
+        }
+    }
+
+    private IEnumerator SqueezeCoroutine()
+    {
+        float t = 0;
+        while (t <= 1)
+        {
+            yield return transform.localScale = Vector3.Lerp(Vector3.one, Vector3.zero, t);
+            t += Time.deltaTime * 2;
+        }
+    }
+
+    private IEnumerator DestroyCoroutine()
+    {
+        yield return new WaitForSeconds(1);
+        Destroy(gameObject);
     }
 }
