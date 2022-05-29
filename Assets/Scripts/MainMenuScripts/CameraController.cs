@@ -19,17 +19,13 @@ public class CameraController : MonoBehaviour
         wTimer = 0;
         StartCoroutine(MovingCoroutine(cameraStartPosition, goalPosition));
         StartCoroutine(RotatingCoroutine(cameraStartRotation, Quaternion.Euler(goalRotation)));
-        //transform.position = goalPosition;
-        //transform.rotation = Quaternion.Euler(goalRotation);
     }
 
-    public void MoveBack(Vector3 presentPosition, Quaternion presentRotation)
+    public void MoveBack()
     {
         wTimer = 0;
-        StartCoroutine(MovingCoroutine(presentPosition, cameraStartPosition));
-        StartCoroutine(RotatingCoroutine(presentRotation, cameraStartRotation));
-        //transform.position = cameraStartPosition;
-        //transform.rotation = cameraStartRotation;
+        StartCoroutine(MovingCoroutine(transform.position, cameraStartPosition));
+        StartCoroutine(RotatingCoroutine(transform.rotation, cameraStartRotation));
     }
 
     private IEnumerator MovingCoroutine(Vector3 startPosition, Vector3 goalPosition)

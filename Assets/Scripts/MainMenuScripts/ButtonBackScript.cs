@@ -7,17 +7,21 @@ public class ButtonBackScript : MonoBehaviour
     private CameraController camera;
 
     [SerializeField]
+    private GameObject buttons;
+
+    [SerializeField]
     private GameObject board;
 
     private void OnMouseDown()
     {
-        camera.MoveBack(camera.transform.position, camera.transform.rotation);
-        StartCoroutine(HideCoroutine());
+        camera.MoveBack();
+        buttons.SetActive(true);
+        StartCoroutine(HideCoroutine(board));
     }
 
-    private IEnumerator HideCoroutine()
+    private IEnumerator HideCoroutine(GameObject objectToHide)
     {
         yield return new WaitForSeconds(0.5f);
-        board.SetActive(false);
+        objectToHide.SetActive(false);
     }
 }
