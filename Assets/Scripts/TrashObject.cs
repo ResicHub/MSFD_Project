@@ -15,7 +15,6 @@ public class TrashObject : MonoBehaviour
 
     private void OnMouseDown()
     {
-        
         startPoint = Camera.main.WorldToScreenPoint(gameObject.transform.position);
         goToGoal = true;
     }
