@@ -6,15 +6,24 @@ using UnityEngine;
 public class TrashObject : MonoBehaviour
 {
     private Vector3 startPoint;
-    private float mZCoord;
+
     [SerializeField]
     private float goalZCoord = 4.5f;
+
     [SerializeField]
     private float approachSpeed = 10f;
     private bool goToGoal = false;
 
+    private Rigidbody rigidbody;
+
+    private void Awake()
+    {
+        rigidbody = GetComponent<Rigidbody>();
+    }
+
     private void OnMouseDown()
     {
+        rigidbody.useGravity = false;
         startPoint = Camera.main.WorldToScreenPoint(gameObject.transform.position);
         goToGoal = true;
     }
@@ -29,6 +38,12 @@ public class TrashObject : MonoBehaviour
             mousePoint.z = goalZCoord;
             gameObject.transform.position = Camera.main.ScreenToWorldPoint(mousePoint);
         }
+    }
+
+    private void OnMouseUp()
+    {
+        rigidbody.velocity = Vector3.zero;
+        rigidbody.useGravity = true;
     }
 
     private void Update()

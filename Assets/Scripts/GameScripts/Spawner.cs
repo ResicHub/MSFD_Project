@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class Spawner : MonoBehaviour
 {
-    private Transform myTransform;
     [SerializeField]
     private float respawnTime;
     private float timer;
@@ -13,7 +12,6 @@ public class Spawner : MonoBehaviour
     private GameObject prefab;
     void Start()
     {
-        myTransform = GetComponent<Transform>();
         timer = respawnTime;
     }
 
@@ -29,6 +27,6 @@ public class Spawner : MonoBehaviour
 
     private void Spawn()
     {
-        Instantiate(prefab, myTransform.position, myTransform.rotation);
+        Instantiate(prefab, transform.position, transform.rotation, transform);
     }
 }
