@@ -34,7 +34,6 @@ public class SettingsManager : MonoBehaviour
         {
             soundButton.ResetText(soundOn);
         }
-        Debug.Log($"{soundOn} {volume}");
     }
 
     public void SetVolume(float value)

@@ -7,7 +7,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 public class SaveLoadManager : MonoBehaviour
 {
     public static SaveLoadManager Instance;
-    private GameObject savedGame;
+    private GameData savedGame;
 
     private void Awake()
     {
@@ -17,21 +17,15 @@ public class SaveLoadManager : MonoBehaviour
         }
     }
 
-    private void LoadGame()
-    {
-        savedGame = null;
-    }
-
     public bool CheckSavedGame()
     {
-        LoadGame();
+        savedGame = LoadGame();
         if (savedGame != null)
         {
             return true;
         }
         return false;
     }
-
 
     public void SaveSettings(SettingsData data)
     {
@@ -64,10 +58,45 @@ public class SaveLoadManager : MonoBehaviour
         }
     }
 
+    public void SaveGame(GameData data)
+    {
+        BinaryFormatter formatter = new BinaryFormatter();
+        string path = Application.persistentDataPath + "/save.sav";
+        FileStream stream = new FileStream(path, FileMode.Create);
+
+        formatter.Serialize(stream, data);
+        stream.Close();
+    }
+
+    public GameData LoadGame()
+    {
+        string path = Application.persistentDataPath + "/save.sav";
+        if (File.Exists(path))
+        {
+            BinaryFormatter formatter = new BinaryFormatter();
+            FileStream stream = new FileStream(path, FileMode.Open);
+
+            GameData data = formatter.Deserialize(stream) as GameData;
+            return data;
+        }
+        else
+        {
+            return null;
+        }
+    }
+
     [System.Serializable]
     public class SettingsData
     {
         public bool soundOn;
         public float volume;
+    }
+
+    [System.Serializable]
+    public class GameData
+    {
+        public int level;
+        public int missed;
+        public int caught;
     }
 }

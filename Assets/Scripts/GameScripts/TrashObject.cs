@@ -5,17 +5,17 @@ using UnityEngine;
 
 public class TrashObject : MonoBehaviour
 {
+    private int type = 1;
+
     private Vector3 startPoint;
 
-    [SerializeField]
     private float goalZCoord = 4.5f;
-
-    [SerializeField]
-    private float approachSpeed = 10f;
+    private float approachSpeed = 100f;
     private bool goToGoal = false;
 
     private Rigidbody rigidbody;
-    bool isDropped = false;
+    private bool isDropped = false;
+    public bool canCatch = true;
 
     private void Awake()
     {
@@ -24,25 +24,41 @@ public class TrashObject : MonoBehaviour
 
     private void OnMouseDown()
     {
-        rigidbody.useGravity = false;
-        startPoint = Camera.main.WorldToScreenPoint(gameObject.transform.position);
-        goToGoal = true;
-        isDropped = false;
+        if (canCatch)
+        {
+            rigidbody.useGravity = false;
+            startPoint = Camera.main.WorldToScreenPoint(gameObject.transform.position);
+            goToGoal = true;
+            isDropped = false;
+        }
     }
 
     private void OnMouseDrag()
     {
-        gameObject.transform.forward = Vector3.one;
-        gameObject.transform.rotation = new Quaternion();
-        if (!goToGoal)
+        if (canCatch)
         {
-            Vector3 mousePoint = Input.mousePosition;
-            mousePoint.z = goalZCoord;
-            gameObject.transform.position = Camera.main.ScreenToWorldPoint(mousePoint);
+            gameObject.transform.forward = Vector3.one;
+            gameObject.transform.rotation = new Quaternion();
+            if (!goToGoal)
+            {
+                Vector3 mousePoint = Input.mousePosition;
+                mousePoint.z = goalZCoord;
+                gameObject.transform.position = Camera.main.ScreenToWorldPoint(mousePoint);
+            }
         }
     }
 
     private void OnMouseUp()
+    {
+        if (canCatch)
+        {
+            isDropped = true;
+            rigidbody.velocity = Vector3.zero;
+            rigidbody.useGravity = true;
+        }
+    }
+
+    public void MouseUp()
     {
         isDropped = true;
         rigidbody.velocity = Vector3.zero;
@@ -71,6 +87,7 @@ public class TrashObject : MonoBehaviour
     {
         if (other.transform.tag == "Floor")
         {
+            GameManager.Instance.IncreaseMissed();
             Destroy(gameObject);
         }
     }
@@ -82,6 +99,14 @@ public class TrashObject : MonoBehaviour
             if (other.transform.tag == "Container")
             {
                 isDropped = false;
+                if (other.GetComponent<ContainerScript>().type == type)
+                {
+                    GameManager.Instance.IncreaseCaught();
+                }
+                else
+                {
+                    GameManager.Instance.IncreaseMissed();
+                }
                 StartCoroutine(GoToContainerCoroutine(transform.position, other.transform.position));
                 StartCoroutine(SqueezeCoroutine());
                 StartCoroutine(DestroyCoroutine());

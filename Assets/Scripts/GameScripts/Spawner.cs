@@ -10,6 +10,8 @@ public class Spawner : MonoBehaviour
 
     [SerializeField]
     private GameObject prefab;
+
+    public bool isSpawning = false;
     void Start()
     {
         timer = respawnTime;
@@ -17,11 +19,14 @@ public class Spawner : MonoBehaviour
 
     void FixedUpdate()
     {
-        timer -= Time.fixedDeltaTime;
-        if (timer < 0)
+        if (isSpawning)
         {
-            Spawn();
-            timer = respawnTime;
+            timer -= Time.fixedDeltaTime;
+            if (timer < 0)
+            {
+                Spawn();
+                timer = respawnTime;
+            }
         }
     }
 

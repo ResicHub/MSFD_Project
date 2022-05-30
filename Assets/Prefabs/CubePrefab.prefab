@@ -127,3 +127,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   goalZCoord: 4.5
   approachSpeed: 100
+  isDropped: 0
