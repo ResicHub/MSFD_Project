@@ -85,6 +85,15 @@ public class SaveLoadManager : MonoBehaviour
         }
     }
 
+    public void RemoveGame()
+    {
+        string path = Application.persistentDataPath + "/save.sav";
+        if(File.Exists(path))
+        {
+            File.Delete(path);
+        }    
+    }
+
     [System.Serializable]
     public class SettingsData
     {

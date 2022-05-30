@@ -12,7 +12,7 @@ public class ButtonContinueScript : MonoBehaviour
     {
         if (SaveLoadManager.Instance.CheckSavedGame())
         {
-
+            MainMenuManager.Instance.ContinueGame();
         }
         else
         {

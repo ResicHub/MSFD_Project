@@ -2,11 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
     [SerializeField]
     private CameraController camera;
+    [SerializeField]
+    private BackGroundController bg;
+    [SerializeField]
+    private TextMeshProUGUI gameOverText;
 
     [SerializeField]
     private GameObject StatisticBoard;
@@ -29,13 +34,19 @@ public class GameManager : MonoBehaviour
 
     private float levelTimer;
     private bool gameOn;
+    private int level;
 
     private int caughtCount;
     private int missedCount;
 
+    private int oldCaughtCount;
+    private int oldMissedCount;
+
     [SerializeField]
     private TextMeshPro timerText;
     private string timerTextCopy;
+
+    private bool isLevelCompleete = true;
 
     private void Awake()
     {
@@ -47,11 +58,36 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        gameOn = true;
-        spawner.isSpawning = true;
-        levelTimer = 5;
+        gameOn = false;
+        spawner.isSpawning = false;
+        levelTimer = 10;
+        level = -1;
         caughtCount = 0;
         missedCount = 0;
+        oldCaughtCount = 0;
+        oldMissedCount = 0;
+
+        StartCoroutine(LoadGameCoroutine());
+        GameOn();
+        StartCoroutine(GameStartCoroutine());
+    }
+
+    private IEnumerator LoadGameCoroutine()
+    {
+        SaveLoadManager.GameData data = SaveLoadManager.Instance.LoadGame();
+        level = data.level;
+        oldCaughtCount = data.caught;
+        oldMissedCount = data.caught;
+        yield return null;
+    }
+
+    private IEnumerator GameStartCoroutine()
+    {
+        yield return new WaitForSeconds(3);
+        Debug.Log($"level {level}");
+        gameOn = true;
+        spawner.isSpawning = true;
+        belt.SetMovement(true);
     }
 
     private void FixedUpdate()
@@ -71,6 +107,23 @@ public class GameManager : MonoBehaviour
                 StartCoroutine(EndGameCoroutine());
             }
         }
+    }
+
+    public void GameOn()
+    {
+        bg.SceneOn();
+        StartCoroutine(SetBG(false));
+    }
+    public void GameOff()
+    {
+        bg.gameObject.SetActive(true);
+        bg.SceneOff();
+    }
+
+    private IEnumerator SetBG(bool value)
+    {
+        yield return new WaitForSeconds(1);
+        bg.gameObject.SetActive(value);
     }
 
     private void ResetTimerText()
@@ -124,12 +177,13 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator EndGameCoroutine()
     {
-        float countAll = caughtCount + missedCount;
-        float caugthPerCent = caughtCount / countAll * 100;
-        float missedPerCent = missedCount / countAll * 100;
-        string statisticString = $"Caught: {System.Math.Round(caugthPerCent, 2)}%{System.Environment.NewLine}" +
-                                 $"Missed: {System.Math.Round(missedPerCent, 2)}%";
-        bool isLevelCompleete = caugthPerCent >= 95f;
+        float sessionCountAll = caughtCount + missedCount;
+        float sessionAccuracy = caughtCount / sessionCountAll * 100;
+        float robotCountAll = sessionCountAll + oldCaughtCount + oldMissedCount;
+        float robotAccuracy = (caughtCount + oldCaughtCount) / robotCountAll * 100;
+        string statisticString = $"Session accuracy: {System.Math.Round(sessionAccuracy, 2)}%{System.Environment.NewLine}" +
+                                 $"Robot accuracy: {System.Math.Round(robotAccuracy, 2)}%";
+        isLevelCompleete = sessionAccuracy >= 95f;
         yield return new WaitForSeconds(3);
         StatisticBoard.SetActive(true);
         statisticText.text = statisticString;
@@ -144,5 +198,71 @@ public class GameManager : MonoBehaviour
             gameResultText.color = Color.red;
         }
         camera.Move(statisticCameraPosition, statisticCameraRotation);
+    }
+
+    public void GameOver()
+    {
+        if (isLevelCompleete)
+        {
+            if (level != 5)
+            {
+                StartCoroutine(NextLevelCoroutine());
+                GameOff();
+                StartCoroutine(GoToNextLevel());
+            }
+            
+        }
+        else
+        {
+            GameOff();
+            SaveLoadManager.Instance.RemoveGame();
+            StartCoroutine(GameOverTextCoroutine());
+        }
+    }
+
+    public IEnumerator NextLevelCoroutine()
+    {
+        SaveLoadManager.GameData data = new SaveLoadManager.GameData()
+        {
+            level = level + 1,
+            caught = oldCaughtCount + caughtCount,
+            missed = oldMissedCount + missedCount
+        };
+        SaveLoadManager.Instance.SaveGame(data);
+        yield return null;
+    }
+
+    public IEnumerator GoToNextLevel()
+    {
+        yield return new WaitForSeconds(1);
+        SceneManager.LoadScene("GameScene");
+    }
+
+    public IEnumerator GameOverTextCoroutine()
+    {
+        yield return new WaitForSeconds(2);
+        float t = 0;
+        while (t <= 1)
+        {
+            Color color = gameOverText.color;
+            color.a = Mathf.Lerp(0f, 1f, t);
+            yield return gameOverText.color = color;
+            t += Time.deltaTime * 2;
+        }
+        yield return new WaitForSeconds(2);
+        t = 0;
+        while (t <= 1)
+        {
+            Color color = gameOverText.color;
+            color.a = Mathf.Lerp(1f, 0f, t);
+            yield return gameOverText.color = color;
+            t += Time.deltaTime * 2;
+        }
+        GoToMainMenu();
+    }
+
+    public void GoToMainMenu()
+    {
+        SceneManager.LoadScene("MainMenuScene");
     }
 }

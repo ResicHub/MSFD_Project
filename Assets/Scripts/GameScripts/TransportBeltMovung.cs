@@ -5,17 +5,14 @@ using UnityEngine;
 public class TransportBeltMovung : MonoBehaviour
 {
     private Rigidbody myRigidbody;
-    [SerializeField]
-    [Range(0.1f, 10f)]
-    private float speed;
+    private float speed = 2f;
     private Vector3 currentPosition;
-    private bool isMoving;
+    private bool isMoving = false;
 
     private void Start()
     {
         myRigidbody = GetComponent<Rigidbody>();
         currentPosition = myRigidbody.position;
-        isMoving = true;
     }
 
     private void FixedUpdate()
