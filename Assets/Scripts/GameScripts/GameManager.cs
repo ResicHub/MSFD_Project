@@ -12,6 +12,10 @@ public class GameManager : MonoBehaviour
     private BackGroundController bg;
     [SerializeField]
     private TextMeshProUGUI gameOverText;
+    [SerializeField]
+    private GameObject menuButton;
+    [SerializeField]
+    private GameObject pauseButton;
 
     [SerializeField]
     private GameObject StatisticBoard;
@@ -42,6 +46,8 @@ public class GameManager : MonoBehaviour
     private int oldCaughtCount;
     private int oldMissedCount;
 
+    [SerializeField]
+    private TextMeshPro levelText;
     [SerializeField]
     private TextMeshPro timerText;
     private string timerTextCopy;
@@ -76,18 +82,37 @@ public class GameManager : MonoBehaviour
     {
         SaveLoadManager.GameData data = SaveLoadManager.Instance.LoadGame();
         level = data.level;
+        levelText.text = $"Level {level}";
         oldCaughtCount = data.caught;
-        oldMissedCount = data.caught;
+        oldMissedCount = data.missed;
         yield return null;
     }
 
     private IEnumerator GameStartCoroutine()
     {
-        yield return new WaitForSeconds(3);
+        yield return new WaitForSeconds(2);
         Debug.Log($"level {level}");
+
+        spawner.SetRespawn(1 - (level - 1) * 0.1f);
+        belt.SetSpeed(2 + level);
+
         gameOn = true;
         spawner.isSpawning = true;
         belt.SetMovement(true);
+        StartCoroutine(ShowPauseButtonCoroutine());
+    }
+
+    private IEnumerator ShowPauseButtonCoroutine()
+    {
+        Vector3 start = pauseButton.transform.position;
+        Vector3 goal;
+        goal = new Vector3(start.x, start.y + 1f, start.z);
+        float t = 0f;
+        while (pauseButton.transform.position != goal)
+        {
+            yield return pauseButton.transform.position = Vector3.Lerp(start, goal, t);
+            t += Time.deltaTime * 2;
+        }
     }
 
     private void FixedUpdate()
@@ -204,19 +229,24 @@ public class GameManager : MonoBehaviour
     {
         if (isLevelCompleete)
         {
-            if (level != 5)
+            if (level < 5)
             {
                 StartCoroutine(NextLevelCoroutine());
                 GameOff();
                 StartCoroutine(GoToNextLevel());
             }
-            
+            else
+            {
+                GameOff();
+                SaveLoadManager.Instance.RemoveGame();
+                StartCoroutine(GameOverTextCoroutine("You Win!"));
+            }
         }
         else
         {
             GameOff();
             SaveLoadManager.Instance.RemoveGame();
-            StartCoroutine(GameOverTextCoroutine());
+            StartCoroutine(GameOverTextCoroutine("Game Over"));
         }
     }
 
@@ -238,8 +268,9 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene("GameScene");
     }
 
-    public IEnumerator GameOverTextCoroutine()
+    public IEnumerator GameOverTextCoroutine(string text)
     {
+        gameOverText.text = text;
         yield return new WaitForSeconds(2);
         float t = 0;
         while (t <= 1)
@@ -264,5 +295,54 @@ public class GameManager : MonoBehaviour
     public void GoToMainMenu()
     {
         SceneManager.LoadScene("MainMenuScene");
+    }
+
+    public void SetPause(bool mode)
+    {
+        gameOn = !mode;
+        spawner.isSpawning = !mode;
+        belt.SetMovement(!mode);
+        StartCoroutine(ShowMenuButtonCoroutine(mode));
+        if (mode)
+        {
+            DeactivateTrash();
+        }
+        else
+        {
+            ActivateTrash();
+        }
+    }
+
+    private IEnumerator ShowMenuButtonCoroutine(bool mode)
+    {
+        Vector3 start = menuButton.transform.position;
+        Vector3 goal;
+        if (mode)
+        {
+            goal = new Vector3(start.x, start.y + 1f, start.z);
+        }
+        else
+        {
+            goal = new Vector3(start.x, start.y - 1f, start.z);
+        }
+        
+        float t = 0f;
+        while (menuButton.transform.position != goal)
+        {
+            yield return menuButton.transform.position = Vector3.Lerp(start, goal, t);
+            t += Time.deltaTime * 2;
+        }
+    }
+
+    public void QuitGame()
+    {
+        StartCoroutine(QuitGameCoroutine());
+    }
+
+    private IEnumerator QuitGameCoroutine()
+    {
+        GameOff();
+        yield return new WaitForSeconds(2);
+        GoToMainMenu();
     }
 }

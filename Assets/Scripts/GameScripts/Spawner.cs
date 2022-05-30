@@ -4,12 +4,11 @@ using UnityEngine;
 
 public class Spawner : MonoBehaviour
 {
-    [SerializeField]
-    private float respawnTime;
+    private float respawnTime = 1;
     private float timer;
 
     [SerializeField]
-    private GameObject prefab;
+    private List<GameObject> prefabs;
 
     public bool isSpawning = false;
     void Start()
@@ -30,8 +29,15 @@ public class Spawner : MonoBehaviour
         }
     }
 
+    public void SetRespawn(float value)
+    {
+        respawnTime = value;
+    }
+
     private void Spawn()
     {
-        Instantiate(prefab, transform.position, transform.rotation, transform);
+        Instantiate(prefabs[Random.Range(0, prefabs.Count)], 
+                    transform.position + new Vector3(Random.value * 2 - 1,0,0), 
+                    Quaternion.Euler(0,Random.Range(-180, 180),0));
     }
 }

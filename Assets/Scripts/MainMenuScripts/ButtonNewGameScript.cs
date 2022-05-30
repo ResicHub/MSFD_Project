@@ -34,7 +34,7 @@ public class ButtonNewGameScript : MonoBehaviour
 
     private IEnumerator HideCoroutine(GameObject objectToHide)
     {
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.8f);
         objectToHide.SetActive(false);
     }
 }
