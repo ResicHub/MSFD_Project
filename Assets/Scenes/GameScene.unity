@@ -2176,7 +2176,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   prefabs:
-  - {fileID: 6074660191614997790, guid: 0cc942ecf544e6048b04861f5321a494, type: 3}
+  - {fileID: 8755909777565133809, guid: a329e5254e0dfb94ea8faeeb59ca74c0, type: 3}
+  - {fileID: 3456702830899974045, guid: 1dea53020ed577144b33326be8e1cff8, type: 3}
+  - {fileID: 6583950407575819490, guid: 67c3ecf3569620644bd3879170053b06, type: 3}
+  - {fileID: 3318752296514373662, guid: 191fdf9cea3899e42ab4ec11e3187da2, type: 3}
+  - {fileID: 846675155098643086, guid: 9b4353d7b74125542b99e78d0c45b5af, type: 3}
+  - {fileID: 6088953443407948818, guid: 1806ff07366b8974192794fa7f9f0b11, type: 3}
+  - {fileID: 4253981190746673128, guid: 0bfebe75a1e79634194b05f49fe80b54, type: 3}
+  - {fileID: 4459695564429869032, guid: f77b541bd35fe6f42a2d6b0203d62144, type: 3}
+  - {fileID: 4095346470942996654, guid: d3feb0813e072314c84bc00cf5d7916a, type: 3}
+  - {fileID: 8130377191444888839, guid: 358e7c8afbb478045a5fd2cc1e021fe5, type: 3}
+  - {fileID: 1872151668877293139, guid: 40d5f5269a700824ca5ce671eb5d3c7d, type: 3}
+  - {fileID: 7538955464966206049, guid: 495e6b0ad328bf74d881184be0ded679, type: 3}
   isSpawning: 0
 --- !u!1001 &708286671
 PrefabInstance:

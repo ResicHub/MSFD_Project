@@ -5,7 +5,8 @@ using UnityEngine;
 
 public class TrashObject : MonoBehaviour
 {
-    private int type = 1;
+    [SerializeField]
+    private int type;
 
     private Vector3 startPoint;
 
@@ -129,7 +130,7 @@ public class TrashObject : MonoBehaviour
         float t = 0;
         while (t <= 1)
         {
-            yield return transform.localScale = Vector3.Lerp(Vector3.one, Vector3.zero, t);
+            yield return transform.localScale = Vector3.Lerp(Vector3.one * transform.localScale.x, Vector3.zero, t);
             t += Time.deltaTime * 2;
         }
     }
