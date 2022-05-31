@@ -66,7 +66,7 @@ public class GameManager : MonoBehaviour
     {
         gameOn = false;
         spawner.isSpawning = false;
-        levelTimer = 10;
+        levelTimer = 15;
         level = -1;
         caughtCount = 0;
         missedCount = 0;

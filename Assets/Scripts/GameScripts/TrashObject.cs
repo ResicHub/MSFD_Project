@@ -38,8 +38,6 @@ public class TrashObject : MonoBehaviour
     {
         if (canCatch)
         {
-            gameObject.transform.forward = Vector3.one;
-            gameObject.transform.rotation = new Quaternion();
             if (!goToGoal)
             {
                 Vector3 mousePoint = Input.mousePosition;
